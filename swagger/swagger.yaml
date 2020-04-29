@@ -1,0 +1,328 @@
+openapi: 3.0.0
+info:
+  title: Swagger для Seller API
+  version: 0.0.1
+
+servers:
+  - url: https://cb-api.ozonru.me
+    description: Тестовый сервер
+  - url: https://api-seller.ozon.ru
+    description: Боевой сервер
+
+tags:
+  - name: category
+    description: Атрибуты и категории товаров
+
+paths:
+  /v1/category/tree:
+    post:
+      summary: Дерево категорий товаров
+      tags:
+        - category
+      parameters:
+        - in: header
+          name: Client-Id
+          schema:
+            type: number
+            example: 836
+        - in: header
+          name: Api-Key
+          schema:
+            type: string
+            example: '0296d4f2-70a1-4c09-b507-904fd05567b9'
+      requestBody:
+        description: 'Параметры запроса:'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryTreeReq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryTreeRes'
+  /v2/category/attribute:
+    post:
+      summary: Список характеристик категории
+      tags:
+        - category
+      parameters:
+        - in: header
+          name: Client-Id
+          schema:
+            type: number
+            example: 836
+        - in: header
+          name: Api-Key
+          schema:
+            type: string
+            example: '0296d4f2-70a1-4c09-b507-904fd05567b9'
+      requestBody:
+        description: 'Параметры запроса:'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryAttributeRes'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryAttributeRes'
+  /v2/category/attribute/value/by-option:
+    post:
+      summary: Новые идентификаторы характеристик
+      tags:
+        - category
+      parameters:
+        - in: header
+          name: Client-Id
+          schema:
+            type: number
+            example: 836
+        - in: header
+          name: Api-Key
+          schema:
+            type: string
+            example: '0296d4f2-70a1-4c09-b507-904fd05567b9'
+      requestBody:
+        description: 'Параметры запроса:'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryAttributeValueByOptionReq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryAttributeValueByOptionRes'
+  /v2​/category​/attribute​/values:
+    post:
+      summary: Справочник характеристик
+      description: Метод возвращает справочник для категории или характеристики товара.
+      tags:
+        - category
+      parameters:
+        - in: header
+          name: Client-Id
+          schema:
+            type: number
+            example: 836
+        - in: header
+          name: Api-Key
+          schema:
+            type: string
+            example: '0296d4f2-70a1-4c09-b507-904fd05567b9'
+      requestBody:
+        description: 'Параметры запроса:'
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryAttributeValueByOptionReq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryAttributeValueByOptionRes'
+components:
+  schemas:
+    CategoryAttributeValuesReq:
+      type: object
+      properties:
+        category_id:
+          type: integer
+          description: Идентификатор категории.
+        attribute_id:
+          type: integer
+          description: Идентификатор характеристики.
+        last_value_id:
+          type: integer
+          description: 	Идентификатор, с которого начать ответ. Например, если last_value_id = 345, то в ответе будут значения начиная c id = 346.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 50
+          description: Количество отправлений в ответе. Максимум — 50, минимум — 1.
+        language:
+          $ref: '#'#/components/schemas/Language'
+      required:
+        - category_id
+        - attribute_id
+        - limit
+    CategoryAttributeValuesResItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Идентификатор характеристики товара.
+        value:
+          type: string
+          description: Значение характеристики товара.
+        picture:
+          type: string
+          description: URL изображения товара.
+        info:
+          type: string
+          description: Информация о категории товаров, в которой доступна характеристика.
+    CategoryAttributeValuesRes:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#'#/components/schemas/CategoryAttributeValuesResItem'
+    CategoryAttributeValueByOptionReqOption:
+      type: object
+      properties:
+        attribute_id:
+          type: integer
+          description: >
+            Старый идентификатор характеристики.
+        option_id:
+          type: integer
+          description: >
+            Старый идентификатор справочника.
+    CategoryAttributeValueByOptionReq:
+      type: object
+      properties:
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryAttributeValueByOptionReqOption'
+          description: >
+            Массив идентификаторов.
+        language:
+          $ref: '#'#/components/schemas/Language'
+      required:
+        - language
+    CategoryAttributeValueByOptionResResult:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Новый идентификатор.
+        option_id:
+          type: integer
+          description: Старый идентификатор справочника.
+        attribute_id:
+          type: integer
+          description: Старый идентификатор характеристики.
+        value:
+          type: string
+          description: Значение характеристики товара.
+    CategoryAttributeValueByOptionRes:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryAttributeValueByOptionResResult'
+    CategoryAttributeRes:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: >
+            Идентификатор характеристики.
+        name:
+          type: string
+          description: >
+            Название товара. До 500 знаков.
+        description:
+          type: string
+          description: >
+            Описание характеристики.
+        type:
+          type: string
+          description: >
+            Тип характеристики: bool, text, option.
+        is_collection:
+          type: boolean
+          description: >
+            Флаг, что характеристика — набор значений.
+        is_required:
+          type: boolean
+          description: >
+            Флаг обязательной характеристики.
+        group_id:
+          type: integer
+          description: >
+            Идентификатор группы характеристик.
+        group_name:
+          type: string
+          description: >
+            Название группы характеристик.
+        dictionary_id:
+          type: integer
+          description: >
+            Идентификатор справочника.
+    CategoryAttributeReq:
+      type: object
+      properties:
+        category_id:
+          type: integer
+          description: Идентификатор категории.
+        attribute_type:
+          type: string
+          description: >
+            Фильтр по характеристикам: required — обязательная, optional — дополнительная.
+        language:
+          $ref: '#/components/schemas/Language'
+      required:
+        - category_id
+    CategoryTreeReq:
+      type: object
+      properties:
+        category_id:
+          type: integer
+          description: >
+            Идентификатор категории.
+        language:
+          $ref: '#/components/schemas/Language'
+    CategoryTreeItem:
+      type: object
+      properties:
+        category_id:
+          type: integer
+          description: >
+            Идентификатор категории.
+        title:
+          type: string
+          description: >
+            Название категории
+        children:
+          type: array
+          description: >
+            Дерево подкатегорий
+          items:
+            $ref: '#/components/schemas/CategoryTreeItem'
+    CategoryTreeRes:
+      type: object
+      properties:
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryTreeItem'
+    Language:
+      type: string
+      enum: [RU, EN]
+      description: >
+        Language in which result will be returned. Possible values are: "EU" (Englush) and "RU" (Russian). By default,
+        if key is not sent, Russian language is used
+    AttributeType:
+      type: string
+      enum: [required, optional]
+
+
+
